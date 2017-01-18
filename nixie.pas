@@ -84,18 +84,21 @@ procedure Register;
 implementation
 
 var
-    FNixiePictures:array[TNixieStyle,0..11] of TPicture;
+    FNixiePictures:array[TNixieStyle,0..11] of TPortableNetworkGraphic;
 
 procedure LoadPictures;
 const n:array[TNixieStyle] of string = ('tube','round');
 var s:TNixieStyle;
     i:integer;
+    r:TResourceStream;
 begin
   for s:=low(s) to high(s) do
     for i:=0 to 11 do
     begin
-      FNixiePictures[s,i]:=TPicture.Create;
-      FNixiePictures[s,i].LoadFromLazarusResource(n[s]+inttostr(i));
+      r:=TResourceStream.Create(HINSTANCE, n[s]+inttostr(i), RT_RCDATA);
+      FNixiePictures[s,i]:=TPortableNetworkGraphic.Create;
+      FNixiePictures[s,i].LoadFromStream(r);
+      r.free;
     end;
 end;
 
@@ -198,11 +201,17 @@ begin
     Bitmap.Width:=width;
     c:=bitmap.canvas;
     c.Brush.Color:=Color;
-    c.FillRect(ClientRect);
+    if color<>clNone then
+    begin
+      c.Brush.Style:=bsSolid;
+      c.FillRect(ClientRect);
+    end;
+    c.Brush.Style:=bsClear;
+
     r:=FirstDigitRect;
     for i:=FDigits-1 downto 0 do
     begin
-      C.StretchDraw(R, FNixiePictures[FStyle,locdigits[i]].Graphic);
+      C.StretchDraw(R, FNixiePictures[FStyle,locdigits[i]]);
       OffsetRect(r,clientwidth div fdigits,0);
     end;
     Canvas.Draw(0,0,Bitmap);
@@ -270,9 +279,10 @@ begin
   RegisterComponents('Misc',[TNixieDisplay]);
 end;
 
+{$R pictures/pictures.rc}
+{$R icon.rc}
+
 initialization
-  {$I nixie.lrs}
-  {$I pictures.lrs}
 
   LoadPictures;
 
