@@ -5,14 +5,14 @@ unit nixie;
 interface
 
 uses
-  LCLIntf, LCLType, LResources, Classes, SysUtils, Controls, ExtCtrls, Graphics, GraphType;
+  LCLIntf, LCLType, Classes, SysUtils, Controls, ExtCtrls, Graphics, types, GraphType;
 
 type
 
 { TNixieDisplay }
 
 TNixieStyle = (NsTube, NsRound);
-TNixieDisplay = class(TCustomControl)
+TNixieDisplay = class(TGraphicControl)
 private
   FValue:integer;
   FDigits:integer;
@@ -24,9 +24,9 @@ private
   procedure SetStyle(NewValue:TNixieStyle);
   function FirstDigitRect:TRect;
 protected
-//  class function GetControlClassDefaultSize: TPoint; override;
-  procedure EraseBackground(DC: HDC); override;
+  class function GetControlClassDefaultSize: TSize; override;
   procedure Paint;override;
+  procedure SetColor(NewColor: TColor); override;
 public
   constructor create(TheOwner:TComponent);override;
 published
@@ -36,47 +36,35 @@ published
   property Style:TNixieStyle read FStyle write SetStyle default NsTube;
   property Align;
   property Anchors;
+  property AutoSize;
   property BorderSpacing;
-  property BorderWidth;
-  property BorderStyle;
-  property ClientHeight;
-  property ClientWidth;
   property Color;
   property Constraints;
-  property DockSite;
   property DragCursor;
   property DragKind;
   property DragMode;
-  property Enabled;
   property ParentColor;
   property ParentShowHint;
   property PopupMenu;
   property ShowHint;
-  property TabOrder;
-  property TabStop;
-  property UseDockManager default True;
   property Visible;
+  property OnChangeBounds;
   property OnClick;
-  property OnDockDrop;
-  property OnDockOver;
+  property OnContextPopup;
   property OnDblClick;
   property OnDragDrop;
   property OnDragOver;
-  property OnEndDock;
   property OnEndDrag;
-  property OnEnter;
-  property OnExit;
-  property OnGetSiteInfo;
-  property OnGetDockCaption;
   property OnMouseDown;
   property OnMouseEnter;
   property OnMouseLeave;
   property OnMouseMove;
   property OnMouseUp;
+  property OnMouseWheel;
+  property OnMouseWheelDown;
+  property OnMouseWheelUp;
   property OnResize;
-  property OnStartDock;
   property OnStartDrag;
-  property OnUnDock;
 end;
 
 procedure Register;
@@ -153,14 +141,10 @@ end;
 procedure TNixieDisplay.Paint;
 var i:integer;
     locvalue:integer;
-    c:TCanvas;
     r:trect;
-    Bitmap:TBitmap;
     locdigits:array of integer;
     locnumdigits:integer;
 begin
-  Bitmap:=TBitmap.Create;
-  try
     setlength(locdigits,FDigits);
     if FValue<0 then
     begin
@@ -197,32 +181,29 @@ begin
       if FValue<0 then
         LocDigits[i+1]:=11;
     end;
-    Bitmap.Height:=height;
-    Bitmap.Width:=width;
-    c:=bitmap.canvas;
-    c.Brush.Color:=Color;
+    canvas.Brush.Color:=Color;
     if color<>clNone then
     begin
-      c.Brush.Style:=bsSolid;
-      c.FillRect(ClientRect);
+      canvas.Brush.Style:=bsSolid;
+      canvas.FillRect(ClientRect);
     end;
-    c.Brush.Style:=bsClear;
-
+    canvas.Brush.Style:=bsClear;
     r:=FirstDigitRect;
     for i:=FDigits-1 downto 0 do
     begin
-      C.StretchDraw(R, FNixiePictures[FStyle,locdigits[i]]);
+      Canvas.StretchDraw(R,FNixiePictures[FStyle,locdigits[i]]);
       OffsetRect(r,clientwidth div fdigits,0);
     end;
-    Canvas.Draw(0,0,Bitmap);
-  finally
-    Bitmap.Free;
-  end;
 end;
 
-procedure TNixieDisplay.EraseBackground(DC: HDC);
+procedure TNixieDisplay.SetColor(NewColor: TColor);
 begin
-  //inherited EraseBackground(DC);
+  inherited;
+  // if color = clnone then transparent, so not opaque
+  if NewColor = clNone then
+    ControlStyle := ControlStyle - [csOpaque]
+  else
+    ControlStyle := ControlStyle + [csOpaque];
 end;
 
 function TNixieDisplay.FirstDigitRect: TRect;
@@ -256,22 +237,22 @@ begin
   OffsetRect(Result,(ImgWidth-PicWidth) div 2,(ImgHeight-PicHeight) div 2);
 end;
 
-{
-class function TNixieDisplay.GetControlClassDefaultSize: TPoint;
+class function TNixieDisplay.GetControlClassDefaultSize: TSize;
 begin
-  Result.X:=318;
-  Result.Y:=148;
+  Result.CX:=318;
+  Result.CY:=148;
 end;
-}
 
 constructor TNixieDisplay.create(TheOwner: TComponent);
 begin
   inherited create(TheOwner);
+  ControlStyle := [csCaptureMouse, csClickEvents, csDoubleClicks, csReplicatable];
   FDigits:=5;
   FValue:=0;
   FStyle:=NsTube;
   FLeadingZero:=false;
-  SetInitialBounds(0, 0, 318 {GetControlClassDefaultSize.X}, 148 {GetControlClassDefaultSize.Y});
+  SetInitialBounds(0, 0, GetControlClassDefaultSize.Cx, GetControlClassDefaultSize.CY);
+  Color:=clNone;
 end;
 
 procedure Register;
@@ -279,8 +260,8 @@ begin
   RegisterComponents('Misc',[TNixieDisplay]);
 end;
 
-{$R pictures/pictures.rc}
-{$R icon.rc}
+{$R pictures/pictures.res}
+{$R icon.res}
 
 initialization
 

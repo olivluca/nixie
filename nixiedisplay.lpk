@@ -5,6 +5,7 @@
     <Name Value="nixiedisplay"/>
     <Type Value="RunAndDesignTime"/>
     <AddToProjectUsesSection Value="True"/>
+    <Author Value="Luca Olivetti &lt;luca@ventoso.org>"/>
     <CompilerOptions>
       <Version Value="11"/>
       <PathDelim Value="\"/>
@@ -17,6 +18,12 @@
         </SyntaxOptions>
       </Parsing>
     </CompilerOptions>
+    <Description Value="Display numbers using images of nixie tubes"/>
+    <License Value="Modified LGPL as per the FCL license
+ZM1082 images by Cestmir Hybl in the public domain, see https://commons.wikimedia.org/wiki/File:ZM1082_operating_animation_front_250px.gif
+Round nixie images by Hellbus under a Creative Commons Attributions-Share Alike 3.0 Unported license, see https://commons.wikimedia.org/wiki/File:Nixie2.gifhttps://commons.wikimedia.org/wiki/File:Nixie2.gif
+"/>
+    <Version Major="1"/>
     <Files Count="1">
       <Item1>
         <Filename Value="nixie.pas"/>

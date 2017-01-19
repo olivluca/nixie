@@ -1,0 +1,1 @@
+lazres pictures.res @filelist
