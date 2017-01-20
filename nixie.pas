@@ -11,7 +11,7 @@ type
 
 { TNixieDisplay }
 
-TNixieStyle = (NsTube, NsRound);
+TNixieStyle = (NsTube, NsRound, NsHalfTube);
 TNixieDisplay = class(TGraphicControl)
 private
   FValue:integer;
@@ -75,7 +75,7 @@ var
     FNixiePictures:array[TNixieStyle,0..11] of TPortableNetworkGraphic;
 
 procedure LoadPictures;
-const n:array[TNixieStyle] of string = ('tube','round');
+const n:array[TNixieStyle] of string = ('tube','round','halftube');
 var s:TNixieStyle;
     i:integer;
     r:TResourceStream;
