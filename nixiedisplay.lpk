@@ -23,7 +23,7 @@
 ZM1082 images by Cestmir Hybl in the public domain, see https://commons.wikimedia.org/wiki/File:ZM1082_operating_animation_front_250px.gif
 Round nixie images by Hellbus under a Creative Commons Attributions-Share Alike 3.0 Unported license, see https://commons.wikimedia.org/wiki/File:Nixie2.gifhttps://commons.wikimedia.org/wiki/File:Nixie2.gif
 "/>
-    <Version Major="1" Release="1"/>
+    <Version Major="1" Release="2"/>
     <Files Count="1">
       <Item1>
         <Filename Value="nixie.pas"/>
